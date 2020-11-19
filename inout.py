@@ -113,8 +113,7 @@ if __name__ == "__main__":
     # today_data = read_csv(today_csv)
     # id = 3
     # today_data = inout_pd_data(id, today_data)
-    # print(today_data)
     # write_csv(today_data, today_csv)
-    id = 7
+    id = 9
     inout_to_csv(id, today_csv)
 

@@ -28,6 +28,7 @@ class App(tk.Frame):
         header.grid(column = 1, row = 0, in_ = self)
         c = 0 ; r = 1
         for s in sorted(students.keys()):
+            print(students[s])
             students[s] = tk.StringVar()
             label = tk.Label(self, textvariable=students[s])
             students[s].set(Romaji2Kanji[s])

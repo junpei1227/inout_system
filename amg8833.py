@@ -7,6 +7,7 @@ import board
 
 import adafruit_amg88xx
 def get_temperature_max():
+    """"""
     # I2Cバスの初期化
     i2c_bus = busio.I2C(board.SCL, board.SDA)
 
@@ -17,13 +18,14 @@ def get_temperature_max():
     # センサーの初期化待ち
     time.sleep(.1)
 
-    # 8x8の表示
+    # 一番温度の高いところを返す
     sensor_data = np.array(sensor.pixels)
     sensor_data = np.amax(sensor_data)
     return sensor_data
 
 
 def get_temperature_8x8():
+    """"""
     # I2Cバスの初期化
     i2c_bus = busio.I2C(board.SCL, board.SDA)
 
@@ -41,6 +43,5 @@ def get_temperature_8x8():
 if __name__ == "__main__":
     sensor_data = get_temperature_8x8()
     print(sensor_data)
-    # print(sensor_data.reshape(100,100))
     print(np.amax(sensor_data))
     print(dir(sensor_data))

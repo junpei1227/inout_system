@@ -8,6 +8,8 @@ import joblib
 import pandas as pd
 import os
 import inout
+import re
+from pyzbar.pyzbar import decode
 from csv_process import read_csv, write_csv
 
 
@@ -38,10 +40,6 @@ def get_predicted(face_image, clsfile, IMAGE_SIZE=40, IMAGE_SIZE_Y=40, COLOR_BYT
 
 
 def face_inout_csv(csv_file, cls_file,stream_size=(320,240), font=cv2.FONT_HERSHEY_SIMPLEX):
-    """
-    顔識別した人の入退室データをcsvに書き込む
-    """
-    
     # HaarLike特徴抽出アルゴリズムのパス
     # 任意のパス
     HAAR_FILE = "data/haarcascade_frontalface_alt.xml"
@@ -58,7 +56,7 @@ def face_inout_csv(csv_file, cls_file,stream_size=(320,240), font=cv2.FONT_HERSH
         # streamからfaceを検出する
         face = cascade.detectMultiScale(stream)
 
-        # 認識したものが一つの時処理を行う
+        # 顔認識したものが一つの時処理を行う
         if len(face) == 1:
             face_image = trimming_face_image(stream, face)
             # face_imageからidを取得
@@ -71,6 +69,27 @@ def face_inout_csv(csv_file, cls_file,stream_size=(320,240), font=cv2.FONT_HERSH
                 cv2.rectangle(stream, (x,y), (x+w,y+h), (0,0,255), 1)
                 # 名前を表示
                 cv2.putText(stream, name_text,(x,y-10), font, 1, (0,255,0), 3, cv2.LINE_AA)
+
+        # streamからqrを検出する
+        decoded_objs = decode(stream)
+        if decoded_objs != []:
+            for obj in decoded_objs:
+                print('Type: ', obj)
+                str_dec_obj = obj.data.decode('utf-8', 'ignore')
+                # 文字列から数値を抽出
+                id = int(re.sub("\\D","", str_dec_obj))
+                # csvにidの人の入退室時間をpandasの形式で書き込む
+                inout.inout_to_csv(id, csv_file)
+
+                print('QR code: {}'.format(str_dec_obj))
+                x, y, w, h = obj.rect
+                # qrコードを四角で囲う
+                cv2.rectangle(stream, (x,y), (x+w,y+h), (0,0,255), 1)
+                # 文字列を表示
+                cv2.putText(stream, str_dec_obj,(x,y-10), font, 1, (0,255,0), 3, cv2.LINE_AA)
+
+
+
 
         # 画像をウインドウに表示
         cv2.imshow("img", stream)
