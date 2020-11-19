@@ -51,7 +51,6 @@ class Qreader(tk.Frame):
                     print(id)
                     # csvにidの人の入退室時間をpandasの形式で書き込む
                     inout.inout_to_csv(id,self.today_csv)
-                    inout.inout_to_csv(id, "today.csv")
 
                     print('QR code: {}'.format(str_dec_obj))
                     left, top, width, height = obj.rect
@@ -63,17 +62,16 @@ class Qreader(tk.Frame):
                     self.canvas.create_text(left + (width / 2), top - 30, text=str_dec_obj,
                                        font=('Helvetica', 20, 'bold'), fill='firebrick1')
      
-     
         self.after(10, self.capture_code)
         
 if __name__=="__main__":
     now = pd.Timestamp.now()
     today_csv = now.strftime("%Y-%m-%d") + ".csv"
     print(today_csv)
+    base_csv = "data/students.csv"
     if os.path.exists(today_csv) == False:
-        today_data = read_csv("students.csv")
+        today_data = read_csv(base_csv)
         write_csv(today_data, today_csv)
-        write_csv(today_data, "today.csv")
 
     root = tk.Tk()
     root.title('QR reader')

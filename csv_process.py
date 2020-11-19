@@ -3,7 +3,7 @@ import csv
 
 
 def read_csv(csv_file):
-    header = pd.read_csv( csv_file, index_col=0, names=["id", "name","status", "in", "dropout", "dropin", "out", "late", "early", "droptime"])
+    header = pd.read_csv( csv_file, index_col=0, names=["id", "name","temperature", "status", "in", "dropout", "dropin", "out", "late", "early", "droptime"])
     return header
 
 
@@ -12,6 +12,6 @@ def write_csv(data, csv_file):
 
 
 if __name__ == "__main__":
-    csv_file = "students.csv"
+    csv_file = "data/students.csv"
     data = read_csv(csv_file)
     write_csv(data,"today.csv")

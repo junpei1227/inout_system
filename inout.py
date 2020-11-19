@@ -1,7 +1,12 @@
 from datetime import datetime, timedelta
 import pandas as pd
+import numpy as np
 import os
 from csv_process import read_csv, write_csv
+try:
+    from amg8833 import  get_temperature_max, get_temperature_8x8
+except ImportError:
+    pass
 
 def check_second_difference(check_time,second=120):
     """
@@ -44,6 +49,13 @@ def inout_pd_data(id, data):
     if pd.isnull(data["in"][id]):
         data["in"][id] = now_time
         data["status"][id] = "◎"
+        # 体温の取得
+        try:
+            sensor_data = get_temperature_max()
+            print(sensor_data)
+            data["temperature"][id] = sensor_data
+        except Exception:
+            pass
         # 遅刻時の処理
         if check_late_early(data["in"][id]) != None:
             data["late"][id] = check_late_early(data["in"][id])["late"]
@@ -94,17 +106,15 @@ def inout_to_csv(id, csv_file):
 if __name__ == "__main__":
     now = pd.Timestamp.now()
     today_csv = now.strftime("%Y-%m-%d") + ".csv"
-    print(today_csv)
+    base_csv = "data/students.csv"
     if os.path.exists(today_csv) == False:
-        today_data = read_csv("students.csv")
+        today_data = read_csv(base_csv)
         write_csv(today_data, today_csv)
-        write_csv(today_data, "today.csv")
     # today_data = read_csv(today_csv)
     # id = 3
     # today_data = inout_pd_data(id, today_data)
     # print(today_data)
     # write_csv(today_data, today_csv)
-    id = 20
+    id = 7
     inout_to_csv(id, today_csv)
-    inout_to_csv(id, "today.csv")
 

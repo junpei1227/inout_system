@@ -11,14 +11,16 @@ from students import students
 
 
 class App(tk.Frame):
-    def __init__(self, master=None):
+    def __init__(self, master=None, today_csv=None):
         self.n = 0
         super().__init__(master)
         self.pack()
+        self.today_csv = today_csv
+        print(self,today_csv)
         self.create_widgets()
 
     def create_widgets(self):
-        # today.csvファイル更新時間
+        # today_csvファイル更新時間
         self.tm_last = ""
 
         # widgetsの配置
@@ -43,15 +45,15 @@ class App(tk.Frame):
         self.view_refresh()
 
     def view_refresh(self):
-        if os.path.exists("today.csv"):
-            tm = datetime.datetime.fromtimestamp(os.path.getmtime("today.csv"))
+        if os.path.exists(self.today_csv):
+            tm = datetime.datetime.fromtimestamp(os.path.getmtime(self.today_csv))
             tm_current = tm.strftime("%H%M%S")
             # ファイルが更新されたか判定
             if self.tm_last != tm_current:
                 # pygame.mixer.music.play(1)
                 self.tm_last = tm_current
                 # csvファイルを読み込み、欠損値を−に変換
-                df = read_csv("today.csv")
+                df = read_csv(self.today_csv)
                 df.fillna("-",inplace=True)
                 # labelに名前とステータスをセットする
                 for n, s in enumerate(sorted(students.keys())):
@@ -69,9 +71,13 @@ if __name__ == "__main__":
     # pygame.mixer.init()
     # pygame.mixer.music.load(sound)
 
+    now = pd.Timestamp.now()
+    today_csv = now.strftime("%Y-%m-%d") + ".csv"
+    print(today_csv)
+
     root = tk.Tk()
     root.wm_title("QR Inout View")
     root.option_add('*font', 'FixedSys 24')
-    app = App(master=root)
+    app = App(master=root, today_csv=today_csv)
     root.geometry("840x600+900+300")
     app.mainloop()
